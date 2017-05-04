@@ -106,7 +106,7 @@ class Home extends React.Component {
                     }}
                     >
                     <img src="http://blogpfthumb.phinf.naver.net/20120303_85/kseede_1330762362214_187ScD_jpg/%C7%C1%B7%CE%C7%CA.jpg" alt="" />
-                    <br>
+                    <br />
                     <div
                         style={{
 
@@ -120,14 +120,15 @@ class Home extends React.Component {
                         <div> ** 전화 상담은 평일 6시 이후 가능 </div>
                         <div> 그 외의 시간은 카카오톡으로 상담 예약을 해주세요 </div>
                     </div>
-                    <br>
+                    <br />
                     {this.props.isLogged ?
                         (this.props.id === ADMIN_ID ?
                           <Link to="admin">
                             <RaisedButton label="수강 설정" primary={true} style={style} />
                           </Link> :
-                          <Link to="admin">
-                            <RaisedButton label="수업 들으러 가기" primary={true} style={style} /></Link>
+                          <Link to="student">
+                            <RaisedButton label="수업듣기" primary={true} style={style} />
+                          </Link>
                         )
                         :
                         <KakaoLogin
