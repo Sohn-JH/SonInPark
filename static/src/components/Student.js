@@ -57,27 +57,31 @@ const styles = {
 
 const findLectureInAvailables = (lectureId, availables) => {
     let result = false;
-    availables.map((availableLectureInfo, index) => {
-        if(availableLectureInfo.lectureId === lectureId) {
-            result = availableLectureInfo;
-        }
-    })
+    if(availables){
+      availables.map((availableLectureInfo, index) => {
+          if(availableLectureInfo.lecture_id === lectureId) {
+              result = availableLectureInfo;
+          }
+      })
+    }
     return result;
 }
 
 const pushSubjectLectureToTable = (subjectName, videoList, availables) => {
     let subTable = []
-    videoList[subjectName].map((weeklyLectures, index) => {
-        let week = index;
-        weeklyLectures.map((lecture, index) => {
-            let id = lecture.id;
-            let title = lecture.title;
-            let url = lecture.url;
-            let expiredDate = findLectureInAvailables(id, availables).expiredDate;
-            let row = { id, week, subject: subjectName, title, expiredDate, url };
-            subTable.push(row);
-        });
-    })
+    if( videoList[0][subjectName]) {
+      videoList[0][subjectName].map((weeklyLectures, index) => {
+          let week = index;
+          weeklyLectures.map((lecture, index) => {
+              let id = lecture.lecture_id;
+              let title = lecture.title;
+              let url = lecture.url;
+              let expiredDate = findLectureInAvailables(id, availables).expire_date;
+              let row = { id, week, subject: subjectName, title, expiredDate, url };
+              subTable.push(row);
+          });
+      })
+    }
     return subTable;
 }
 
@@ -92,6 +96,22 @@ const makeTableDataForStudent = (videoList, availables) => {
     return table;
 }
 
+const isAvailable = (expiredDate ,today) => {
+  // check expireDate > today => true
+  if(!expiredDate) return false
+
+  let ey = parseInt(expiredDate.split('-')[0]);
+  let em = parseInt(expiredDate.split('-')[1]);
+  let ed = parseInt(expiredDate.split('-')[2]);
+  let ty = parseInt(today.split('-')[0]);
+  let tm = parseInt(today.split('-')[1]);
+  let td = parseInt(today.split('-')[2]);
+
+  let result = ey >= ty;
+  result = result && ey == ty && em >= tm;
+  result = result && em == tm && ed >= td;
+  return result;
+}
 // component
 class Student extends React.Component {
   constructor(props) {
@@ -125,10 +145,14 @@ class Student extends React.Component {
 
   _onVideoClick(e){
     console.log(this.state.tableData[e.target.id].url);
-    this.props._openModalWith(<VideoModal videoUrl={this.state.tableData[e.target.id].url} />);
+    this.props._openModalWith(<VideoModal videoUrl={"http://52.42.203.75/dist/videos/math/math1_1.mp4"} />);
+    //  this.state.tableData[e.target.id].url} />);
   }
 
   render(){
+    let today = new Date();
+    let todayString = today.getFullYear()+"-" + (parseInt(today.getMonth())+1)+'-' + today.getDate();
+    console.log(this.state.tableData);
 
       if (!this.props.isLogged) return (<div></div>)
 
@@ -151,7 +175,7 @@ class Student extends React.Component {
             >
             <TableRow>
               <TableHeaderColumn colSpan="6" tooltip="Lecture List" style={{textAlign: 'center', fontSize: '20px'}}>
-                  Lecture List
+                  {"Lecture List " + todayString}
               </TableHeaderColumn>
             </TableRow>
             <TableRow>
@@ -179,7 +203,7 @@ class Student extends React.Component {
                 <TableRowColumn>{row.expiredDate}</TableRowColumn>
                 <TableRowColumn>
                   <FontIcon id={index} className="material-icons"
-                    style={row.expiredDate ? {cursor:'pointer'} : {cursor:'not-allowed', pointerEvents: 'none',opacity: 0.5} }
+                    style={isAvailable(row.expiredDate ,todayString) ? {cursor:'pointer'} : {cursor:'not-allowed', pointerEvents: 'none',opacity: 0.5} }
                     color={blue500}
                     onClick={this._onVideoClick}
                   > videogame_asset</FontIcon></TableRowColumn>

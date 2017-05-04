@@ -40,6 +40,7 @@ function mapStateToProps(state) {
         availables: state.dataReducer.availables,
         isLogged: state.dataReducer.isLogged,
         studentList: state.dataReducer.studentList,
+        studentId: state.dataReducer.studentId,
     };
 }
 
@@ -64,28 +65,32 @@ const styles = {
 
 const findLectureInAvailables = (lectureId, availables) => {
     let result = false;
-    availables.map((availableLectureInfo, index) => {
-        if(availableLectureInfo.lectureId === lectureId) {
-            result = availableLectureInfo;
-        }
-    })
+    if(availables){
+      availables.map((availableLectureInfo, index) => {
+          if(availableLectureInfo.lecture_id === lectureId) {
+              result = availableLectureInfo;
+          }
+      })
+    }
     return result;
 }
 
-const pushSubjectLectureToTable = (subjectname, videoList, availables) => {
-    let subTable = []
-    videoList[subjectname].map((weeklyLectures, index) => {
-        let week = index;
-        weeklyLectures.map((lecture, index) => {
-            let id = lecture.id;
-            let title = lecture.title;
-            let url = lecture.url;
-            let expiredDate = findLectureInAvailables(id, availables).expiredDate;
-
-            let row = { id, week, subject: subjectname, title, expiredDate, url };
-            subTable.push(row);
-        });
-    })
+const pushSubjectLectureToTable = (subjectName, videoList, availables) => {
+    let subTable = [];
+    if( videoList[0][subjectName]) {
+      videoList[0][subjectName].map((weeklyLectures, index) => {
+          let week = index;
+          weeklyLectures.map((lecture, index) => {
+            console.log("lecture", lecture);
+              let id = lecture.lecture_id;
+              let title = lecture.title;
+              let url = lecture.url;
+              let expiredDate = findLectureInAvailables(id, availables).expire_date;
+              let row = { id, week, subject: subjectName, title, expiredDate, url };
+              subTable.push(row);
+          });
+      })
+    }
     return subTable;
 }
 
@@ -143,26 +148,31 @@ class Admin extends React.Component {
   _onSelectFieldChange(event, index, value){
     console.log(index);
     let that = this;
-    let studentId = this.props.studentList[index - 1].id;
+    let studentId = this.props.studentList[index - 1].user_id;
     let nickname = this.props.studentList[index - 1].nickname;
     let availables;
     let videoList = this.props.videoList;
 
     // 1 서버에 해당 학생의 availables 정보 받아오기
     httpManager.getStudentData({studentId: studentId}, (res)=>{
+      console.log(res);
         // store에 저장
-        that.props._updateStudent(res.studentId, res.nickname, res.avail_lectures);
-        availables = res.avail_lectures;
-        that.setState({ tableData: makeTableDataForAdmin(videoList, availables)});
+        that.props._updateStudent(res.data.user_id, res.data.nickname, res.data.avail_lectures);
+
+        // tableData 생성
+        availables = res.data.avail_lectures;
+        let tableData = makeTableDataForAdmin(videoList, availables);
+        that.setState({ tableData });
     })
 
     this.setState({ selectedStudent: value });
   }
 
   _handleChangeDate(event, date) {
+      // state 변경
       let tableData = this.state.tableData;
       console.log(tableData[this.state.selectedLectureIndex]);
-      tableData[this.state.selectedLectureIndex]["expiredDate"] = date.getFullYear()+"-"+date.getMonth()+'-'+date.getDate();
+      tableData[this.state.selectedLectureIndex]["expiredDate"] = date.getFullYear()+"-"+(parseInt(date.getMonth())+1)+'-'+date.getDate();
       this.setState({
           tableData: tableData,
       });
@@ -170,23 +180,27 @@ class Admin extends React.Component {
   _onSaveClick(e){
       // table Data payload로 변환
       let tableData = this.state.tableData;
-      let available = [];
+      let availableData = { available:[] };
 
       tableData.map((row) => {
           if(row.expiredDate){
-              available.push({ lecture_id: row.id, expire_date: row.expiredDate});
+              availableData.available.push({ lecture_id: row.id, expire_date: row.expiredDate});
           }
       })
+      console.log(availableData);
 
-      httpManager.postStudentData({studentId:this.props.studentId, data: available})
       // 변환된 데이터 API로 요청
+      httpManager.postStudentData({studentId:this.props.studentId, data: availableData});
+
+      // store 에 저장
   }
 
   render(){
       let that = this;
       let tableData =  makeTableDataForAdmin(this.props.videoList, this.props.availables)
       let today = new Date();
-      let todayString = today.getFullYear()+"-" + (parseInt(today.getMonth())+1)+'-' + today.getDate()
+      let todayString = today.getFullYear()+"-" + (parseInt(today.getMonth())+1)+'-' + today.getDate();
+      console.log(this.state.tableData);
 
       if (!this.props.isLogged) return (<div></div>)
 
@@ -255,7 +269,7 @@ class Admin extends React.Component {
                             <TableRowColumn>
                                 <DatePicker
                                     hintText="Not Allowed"
-                                    value={row.expiredDate ? new Date(row.expiredDate.split('-')[0], row.expiredDate.split('-')[1], row.expiredDate.split('-')[2]) : null }
+                                    value={row.expiredDate ? new Date(row.expiredDate.split('-')[0], parseInt(row.expiredDate.split('-')[1])-1, row.expiredDate.split('-')[2]) : null }
                                     onChange={this._handleChangeDate}
                                     onClick={(e)=>{that.setState({ selectedLectureIndex: e.currentTarget.parentNode.parentNode.parentNode.parentNode.id },()=>{console.log(that.state.selectedLectureIndex);})}}
                                 />

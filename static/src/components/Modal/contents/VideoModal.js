@@ -69,7 +69,7 @@ class VideoModal extends React.Component {
                 preload = "auto"
                 controls
             >
-            <source src = {this.props.videoUrl ? this.props.videoUrl : ""} alt = "" type = "video/mp4" / >
+            <source src = {this.props.videoUrl ? this.props.videoUrl : "http://52.42.203.75/videos/math/math1_1.mp4"} alt = "" type = "video/mp4" />
             Your browser does not support HTML5 video. </video>
         </div>
 

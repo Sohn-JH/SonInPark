@@ -18,12 +18,12 @@ export const updateUser = (id, nickname) => {
   })
 }
 
-export const updateStudent = (studentId, nickname, available) => {
+export const updateStudent = (studentId, nickname, availables) => {
   return ({
     type: "UPDATE_STUDENT",
     studentId,
     nickname,
-    available,
+    availables,
   })
 }
 

@@ -17,12 +17,12 @@ export default class HttpManager {
     axios.get(url).then(callback).catch(error);
   }
 
-  postStudentData(params = {studentId : "", data : null}, callback, error){
+  postStudentData(params = {studentId : "", data : {}}, callback, error){
     let url = SERVER_URL + "/api/user/" + params.studentId;
-    axios.post(url, data).then(callback).catch(error);
+    axios.post(url, params.data).then(callback).catch(error);
   }
 
-  getAllStudentsList(callback, error) {
+  getAllStudentList(callback, error) {
     let url = SERVER_URL + "/api/user/all";
     axios.get(url).then(callback).catch(error);
   }
