@@ -91,7 +91,7 @@ const dataReducer = (state = initialState, action) => {
         nickname: action.nickname
       });
 
-    case "UPDATE_STUDENT": // (studentId, availables)
+    case "UPDATE_STUDENT": // (studentId, availables, nickname)
       return Object.assign({}, state, {
         studentId: action.studentId,
         nickname: action.nickname,

@@ -8,7 +8,7 @@ import { Link } from 'react-router'
 import RaisedButton from 'material-ui/RaisedButton';
 
 // action
-import { logOn, updateUser, updateStudentsList, updateStudent, updateVideoList } from '../actions';
+import { logOn, updateUser, updateStudentList, updateStudent, updateVideoList } from '../actions';
 
 // constants
 import { ADMIN_ID } from '../constants';
@@ -19,6 +19,7 @@ import { ADMIN_ID } from '../constants';
 function mapStateToProps(state) {
   return {
     isLogged: state.dataReducer.isLogged,
+    id: state.dataReducer.id,
   };
 }
 
@@ -26,9 +27,9 @@ function mapDispatchToProps(dispatch) {
   return ({
     _logOn: () => { dispatch(logOn()); },
     _updateUser: (id, nickname) => { dispatch(updateUser(id, nickname))},
-    _updateStudentsList: (studentsList) => { dispatch(updateStudentsList(studentsList)); },
-    _updateStudent: (studentId) => { dispatch(_updateStudent(studentId)); },
-    _updateVideoList: (videoList) => { dispatch(_updateVideoList(videoList)); },
+    _updateStudentList: (studentList) => { dispatch(updateStudentList(studentList)); },
+    _updateStudent: (studentId, nickname, avilables) => { dispatch(updateStudent(studentId, nickname, avilables)); },
+    _updateVideoList: (videoList) => { dispatch(updateVideoList(videoList))},
   });
 }
 
@@ -55,30 +56,29 @@ class Home extends React.Component {
         that.props._logOn(); // 로그인 상태 변경
         that.props._updateUser(res.id, res.properties.nickname); // 이용자 정보 변경
 
-        /* TODO API 연동 이후 주석 해제 TODO*/
-          // 받아온 id와 nickname 정보로 서버에 유저정보 등록 요청
-        httpManager.postUserData({id: res.id, nickname: res.properties.nickname});
+        // 받아온 id와 nickname 정보로 서버에 유저정보 등록 요청
+        httpManager.postUserData({id: res.id, nickname: res.properties.nickname},(res)=>{console.log("postUserData", res);});
 
         // 비디오 리스트 요청
         httpManager.getVideoList((res) => {
           console.log("getVideoList", res);
             // store에 저장
-            let videoList = res.data;
-            this.props._updateVideoList(videoList); // 비디오 정보 업데이트
+            let videoList = res.data || {};
+            that.props._updateVideoList(videoList); // 비디오 정보 업데이트
         });
 
-        if(res.id === ADMIN_ID){ // admin 인 경우
-            httpManager.getAllStudentsList((res)=>{
-              console.log("getAllStudentsList", res);
+        if(res.id+"" == ADMIN_ID){ // admin 인 경우
+            httpManager.getAllStudentList((res)=>{
+              console.log("getAllStudentList", res);
                 // 모든 학생 리스트 저장 (후에 선택적으로 요청 가능)
-                let studentsList = res.data;
-                this._updateStudentsList(studentsList);
+                let studentList = res.data.id_list;
+                that.props._updateStudentList(studentList);
             })
         } else { // 학생인 경우
             httpManager.getStudentData({studentId: res.id}, (res) => {
-            console.log("getStudentData", res);
+            console.log("getStudentData", res.data.nickname);
                 // 해당 학생 정보(studentId, available)업데이트
-                this._updateStudent(res.data.user_id, res.data.nickname, res.data.avail_lecture)
+                that.props._updateStudent(res.data.user_id, res.data.nickname, res.data.avail_lectures || {})
             })
         }
 
@@ -95,6 +95,7 @@ class Home extends React.Component {
   };
 
     render(){
+      let id = this.props.id;
         return(
                 <div className="app-body"
                     style={{
@@ -106,7 +107,7 @@ class Home extends React.Component {
                     }}
                     >
                     <img src="http://blogpfthumb.phinf.naver.net/20120303_85/kseede_1330762362214_187ScD_jpg/%C7%C1%B7%CE%C7%CA.jpg" alt="" />
-                    <br>
+                    <br />
                     <div
                         style={{
 
@@ -120,14 +121,14 @@ class Home extends React.Component {
                         <div> ** 전화 상담은 평일 6시 이후 가능 </div>
                         <div> 그 외의 시간은 카카오톡으로 상담 예약을 해주세요 </div>
                     </div>
-                    <br>
+                    <br />
                     {this.props.isLogged ?
-                        (this.props.id === ADMIN_ID ?
+                        (id + "" == ADMIN_ID ?
                           <Link to="admin">
                             <RaisedButton label="수강 설정" primary={true} style={style} />
                           </Link> :
-                          <Link to="admin">
-                            <RaisedButton label="수업 들으러 가기" primary={true} style={style} /></Link>
+                          <Link to="student">
+                            <RaisedButton label="수업 듣기" primary={true} style={style} /></Link>
                         )
                         :
                         <KakaoLogin
