@@ -56,7 +56,6 @@ const styles = {
 };
 
 const findLectureInAvailables = (lectureId, availables) => {
-  debugger;
     let result = false;
     if(availables){
       availables.map((availableLectureInfo, index) => {
@@ -101,7 +100,6 @@ const isAvailable = (expiredDate ,today) => {
   // check expireDate > today => true
   if(!expiredDate) return false
 
-  debugger;
   let ey = parseInt(expiredDate.split('-')[0]);
   let em = parseInt(expiredDate.split('-')[1]);
   let ed = parseInt(expiredDate.split('-')[2]);
@@ -181,7 +179,7 @@ class Student extends React.Component {
               </TableHeaderColumn>
             </TableRow>
             <TableRow>
-              <TableHeaderColumn tooltip="The ID">ID</TableHeaderColumn>
+              <TableHeaderColumn tooltip="The ID">                  <span className="glyphicon glyphicon-play-circle"></span> ID</TableHeaderColumn>
               <TableHeaderColumn tooltip="The Subject">Subject</TableHeaderColumn>
               <TableHeaderColumn tooltip="The Week">Week</TableHeaderColumn>
               <TableHeaderColumn tooltip="The Title">Title</TableHeaderColumn>

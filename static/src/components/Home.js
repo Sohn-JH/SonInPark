@@ -82,7 +82,7 @@ class Home extends React.Component {
             })
         }
 
-        // alert(JSON.stringify(res));
+        //alert(JSON.stringify(res));
       },
       fail: function(error) {
         alert(JSON.stringify(error));

@@ -25,6 +25,7 @@ function mapDispatchToProps(dispatch){
 // style
 const customContentStyle = {
   width: '80%',
+  height: '90%',
   maxWidth: '1000px',
 };
 
@@ -64,8 +65,10 @@ class VideoModal extends React.Component {
         contentStyle={customContentStyle}
         open={this.props.showModal}
       >
-        <div className = "embed-responsive embed-responsive-16by9" >
+        <div className = "embed-responsive embed-responsive-16by9"
+          style={{overflow: 'scroll'}}>
             <video className = "video-on-window embed-responsive-item"
+
                 preload = "auto"
                 controls
             >

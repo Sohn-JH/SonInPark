@@ -48,13 +48,15 @@ class Header extends React.Component {
           flex: '0 0 64px',
         }}
       >
+        <script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
         <AppBar
           title="Assay.Tut"
           iconElementLeft={<IconButton onClick={()=>{browserHistory.push('home');}}><ActionHome /></IconButton>}
           iconElementRight={this.props.isLogged ?
-            <FlatButton style={this.props.style}
+            <FlatButton id="logOutButton"
+              style={this.props.style}
               onClick={(e) => {
-                location.href = "http://developers.kakao.com/logout";
+                Kakao.Auth.logout(); 
                 this.props._logOut();
               }}
               label="LOG OUT"
