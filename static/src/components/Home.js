@@ -11,7 +11,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import { logOn, updateUser, updateStudentList, updateStudent, updateVideoList } from '../actions';
 
 // constants
-import { ADMIN_ID } from '../constants';
+import { ADMIN_ID, DEV_ID } from '../constants';
 
 // sub-components
 
@@ -67,7 +67,7 @@ class Home extends React.Component {
             that.props._updateVideoList(videoList); // 비디오 정보 업데이트
         });
 
-        if(res.id+"" == ADMIN_ID){ // admin 인 경우
+        if(res.id+"" == ADMIN_ID || res.id+"" == DEV_ID){ // admin 인 경우
             httpManager.getAllStudentList((res)=>{
               console.log("getAllStudentList", res);
                 // 모든 학생 리스트 저장 (후에 선택적으로 요청 가능)
@@ -82,7 +82,11 @@ class Home extends React.Component {
             })
         }
 
+<<<<<<< HEAD
         //alert(JSON.stringify(res));
+=======
+//         alert(JSON.stringify(res));
+>>>>>>> refs/remotes/origin/master
       },
       fail: function(error) {
         alert(JSON.stringify(error));
@@ -123,12 +127,13 @@ class Home extends React.Component {
                     </div>
                     <br />
                     {this.props.isLogged ?
-                        (id + "" == ADMIN_ID ?
+                        (id + "" == ADMIN_ID || id+"" == DEV_ID ?
                           <Link to="admin">
                             <RaisedButton label="수강 설정" primary={true} style={style} />
                           </Link> :
                           <Link to="student">
-                            <RaisedButton label="수업 듣기" primary={true} style={style} /></Link>
+                            <RaisedButton label="수업듣기" primary={true} style={style} />
+                          </Link>
                         )
                         :
                         <KakaoLogin

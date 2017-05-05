@@ -179,12 +179,21 @@ class Student extends React.Component {
               </TableHeaderColumn>
             </TableRow>
             <TableRow>
+<<<<<<< HEAD
               <TableHeaderColumn tooltip="The ID">                  <span className="glyphicon glyphicon-play-circle"></span> ID</TableHeaderColumn>
               <TableHeaderColumn tooltip="The Subject">Subject</TableHeaderColumn>
               <TableHeaderColumn tooltip="The Week">Week</TableHeaderColumn>
               <TableHeaderColumn tooltip="The Title">Title</TableHeaderColumn>
               <TableHeaderColumn tooltip="The Expired Date">Expired Date</TableHeaderColumn>
               <TableHeaderColumn tooltip="The Video">Video</TableHeaderColumn>
+=======
+              <TableHeaderColumn tooltip="Index">순서</TableHeaderColumn>
+              <TableHeaderColumn tooltip="Subject">과목</TableHeaderColumn>
+              <TableHeaderColumn tooltip="Week">주차</TableHeaderColumn>
+              <TableHeaderColumn tooltip="Title">강연</TableHeaderColumn>
+              <TableHeaderColumn tooltip="Expired Date">수강 기한</TableHeaderColumn>
+              <TableHeaderColumn tooltip="The Video">영상</TableHeaderColumn>
+>>>>>>> refs/remotes/origin/master
             </TableRow>
           </TableHeader>
 
@@ -202,11 +211,10 @@ class Student extends React.Component {
 
                 <TableRowColumn>{row.expiredDate}</TableRowColumn>
                 <TableRowColumn>
-                  <FontIcon id={index} className="material-icons"
-                    style={isAvailable(row.expiredDate ,todayString) ? {cursor:'pointer'} : {cursor:'not-allowed', pointerEvents: 'none',opacity: 0.5} }
-                    color={blue500}
+		  <span className="glyphicon glyphicon-play-circle"
+                    style={isAvailable(row.expiredDate ,todayString) ? {cursor:'pointer'} : {cursor:'not-allowed', pointerEvents: 'none',opacity: 0.5}}
                     onClick={this._onVideoClick}
-                  > videogame_asset</FontIcon></TableRowColumn>
+                  ></span></TableRowColumn>
               </TableRow>
               ))}
           </TableBody>
