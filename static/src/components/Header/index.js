@@ -57,6 +57,7 @@ class Header extends React.Component {
               onClick={(e) => {
 		Kakao.Auth.logout(); 
                 this.props._logOut();
+		browserHistory.push('home');
               }}
               label="LOG OUT"
             />
