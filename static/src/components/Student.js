@@ -22,6 +22,7 @@ import FontIcon from 'material-ui/FontIcon';
 import {red500, yellow500, blue500} from 'material-ui/styles/colors';
 
 // constants
+import {SERVER_URL} from '../constants';
 
 // sub-components
 
@@ -71,7 +72,7 @@ const pushSubjectLectureToTable = (subjectName, videoList, availables) => {
     let subTable = []
     if( videoList[0][subjectName]) {
       videoList[0][subjectName].map((weeklyLectures, index) => {
-          let week = index;
+          let week = index+1;
           weeklyLectures.map((lecture, index) => {
               let id = lecture.lecture_id;
               let title = lecture.title;
@@ -108,8 +109,8 @@ const isAvailable = (expiredDate ,today) => {
   let td = parseInt(today.split('-')[2]);
 
   let result = ey >= ty;
-  result = result && ey == ty && em >= tm;
-  result = result && em == tm && ed >= td;
+  result = result && (ey == ty ? em >= tm : true);
+  result = result && (em == tm ? ed >= td :true);
   return result;
 }
 // component
@@ -144,8 +145,9 @@ class Student extends React.Component {
   }
 
   _onVideoClick(e){
-    console.log(this.state.tableData[e.target.id].url);
-    this.props._openModalWith(<VideoModal videoUrl={"http://52.42.203.75/dist/videos/math/math1_1.mp4"} />);
+    let videoUrl = SERVER_URL + "/dist/"+ this.state.tableData[e.target.id].url;
+    console.log(videoUrl);
+    this.props._openModalWith(<VideoModal videoUrl={videoUrl} />);
     //  this.state.tableData[e.target.id].url} />);
   }
 
@@ -174,26 +176,17 @@ class Student extends React.Component {
                 adjustForCheckbox={this.state.showCheckboxes}
             >
             <TableRow>
-              <TableHeaderColumn colSpan="6" tooltip="Lecture List" style={{textAlign: 'center', fontSize: '20px'}}>
+              <TableHeaderColumn colSpan="8" tooltip="Lecture List" style={{textAlign: 'center', fontSize: '20px'}}>
                   {"Lecture List " + todayString}
               </TableHeaderColumn>
             </TableRow>
             <TableRow>
-<<<<<<< HEAD
-              <TableHeaderColumn tooltip="The ID">                  <span className="glyphicon glyphicon-play-circle"></span> ID</TableHeaderColumn>
-              <TableHeaderColumn tooltip="The Subject">Subject</TableHeaderColumn>
-              <TableHeaderColumn tooltip="The Week">Week</TableHeaderColumn>
-              <TableHeaderColumn tooltip="The Title">Title</TableHeaderColumn>
-              <TableHeaderColumn tooltip="The Expired Date">Expired Date</TableHeaderColumn>
-              <TableHeaderColumn tooltip="The Video">Video</TableHeaderColumn>
-=======
               <TableHeaderColumn tooltip="Index">순서</TableHeaderColumn>
               <TableHeaderColumn tooltip="Subject">과목</TableHeaderColumn>
               <TableHeaderColumn tooltip="Week">주차</TableHeaderColumn>
-              <TableHeaderColumn tooltip="Title">강연</TableHeaderColumn>
-              <TableHeaderColumn tooltip="Expired Date">수강 기한</TableHeaderColumn>
+              <TableHeaderColumn colSpan="2" tooltip="Title">강연</TableHeaderColumn>
+              <TableHeaderColumn colSpan="2" tooltip="Expired Date">수강 기한</TableHeaderColumn>
               <TableHeaderColumn tooltip="The Video">영상</TableHeaderColumn>
->>>>>>> refs/remotes/origin/master
             </TableRow>
           </TableHeader>
 
@@ -207,14 +200,16 @@ class Student extends React.Component {
                 <TableRowColumn>{index}</TableRowColumn>
                 <TableRowColumn>{row.subject}</TableRowColumn>
                 <TableRowColumn>{row.week}</TableRowColumn>
-                <TableRowColumn>{row.title}</TableRowColumn>
+                <TableRowColumn colSpan="2">{row.title}</TableRowColumn>
 
-                <TableRowColumn>{row.expiredDate}</TableRowColumn>
+                <TableRowColumn colSpan="2">{row.expiredDate}</TableRowColumn>
                 <TableRowColumn>
-		  <span className="glyphicon glyphicon-play-circle"
+		               <span id={index}
+                    className="glyphicon glyphicon-play-circle"
                     style={isAvailable(row.expiredDate ,todayString) ? {cursor:'pointer'} : {cursor:'not-allowed', pointerEvents: 'none',opacity: 0.5}}
                     onClick={this._onVideoClick}
-                  ></span></TableRowColumn>
+                  ></span>
+                </TableRowColumn>
               </TableRow>
               ))}
           </TableBody>

@@ -56,13 +56,9 @@ class Header extends React.Component {
             <FlatButton id="logOutButton"
               style={this.props.style}
               onClick={(e) => {
-<<<<<<< HEAD
-                Kakao.Auth.logout(); 
-=======
-		Kakao.Auth.logout(); 
->>>>>>> refs/remotes/origin/master
+                Kakao.Auth.logout();
                 this.props._logOut();
-		browserHistory.push('home');
+		            browserHistory.push('home');
               }}
               label="LOG OUT"
             />

@@ -82,11 +82,7 @@ class Home extends React.Component {
             })
         }
 
-<<<<<<< HEAD
-        //alert(JSON.stringify(res));
-=======
 //         alert(JSON.stringify(res));
->>>>>>> refs/remotes/origin/master
       },
       fail: function(error) {
         alert(JSON.stringify(error));

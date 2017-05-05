@@ -5,6 +5,7 @@ import { httpManager } from '../managers';
 
 import ModalContainer from './Modal/ModalContainer';
 import VideoModal from './Modal/contents/VideoModal';
+import { browserHistory } from 'react-router';
 
 import {
   Table,
@@ -19,6 +20,7 @@ import TextField from 'material-ui/TextField';
 import Toggle from 'material-ui/Toggle';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
+import Snackbar from 'material-ui/Snackbar';
 
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
@@ -26,7 +28,11 @@ import FontIcon from 'material-ui/FontIcon';
 import {red500, yellow500, blue500} from 'material-ui/styles/colors';
 import DatePicker from 'material-ui/DatePicker';
 
+import Select from 'react-select';
+import 'react-select/dist/react-select.css';
+
 // constants
+import {SERVER_URL} from '../constants';
 
 // sub-components
 
@@ -77,9 +83,9 @@ const findLectureInAvailables = (lectureId, availables) => {
 
 const pushSubjectLectureToTable = (subjectName, videoList, availables) => {
     let subTable = [];
-    if( videoList[0][subjectName]) {
+    if(videoList[0][subjectName]) {
       videoList[0][subjectName].map((weeklyLectures, index) => {
-          let week = index;
+          let week = index+1;
           weeklyLectures.map((lecture, index) => {
             console.log("lecture", lecture);
               let id = lecture.lecture_id;
@@ -122,6 +128,7 @@ class Admin extends React.Component {
             height: '400px',
             tableData: makeTableDataForAdmin(this.props.videoList, this.props.availables),
             selectedStudent: "",
+            openSnackbar:false,
         };
 
         this._onVideoClick = this._onVideoClick.bind(this);
@@ -141,15 +148,17 @@ class Admin extends React.Component {
   }
 
   _onVideoClick(e){
-    console.log(this.state.tableData[e.target.id].url);
-    this.props._openModalWith(<VideoModal videoUrl={this.state.tableData[e.target.id].url} />);
+    let videoUrl = SERVER_URL + "/dist/"+ this.state.tableData[e.target.id].url;
+    console.log(videoUrl);
+    this.props._openModalWith(<VideoModal videoUrl={videoUrl} />);
+    //  this.state.tableData[e.target.id].url} />);
   }
 
-  _onSelectFieldChange(event, index, value){
-    console.log(index);
+  _onSelectFieldChange(val){
+    console.log(val.index);
     let that = this;
-    let studentId = this.props.studentList[index - 1].user_id;
-    let nickname = this.props.studentList[index - 1].nickname;
+    let studentId = this.props.studentList[val.index].user_id;
+    let nickname = this.props.studentList[val.index].nickname;
     let availables;
     let videoList = this.props.videoList;
 
@@ -164,8 +173,7 @@ class Admin extends React.Component {
         let tableData = makeTableDataForAdmin(videoList, availables);
         that.setState({ tableData });
     })
-
-    this.setState({ selectedStudent: value });
+    this.setState({ selectedStudent: val.value });
   }
 
   _handleChangeDate(event, date) {
@@ -192,15 +200,32 @@ class Admin extends React.Component {
       // 변환된 데이터 API로 요청
       httpManager.postStudentData({studentId:this.props.studentId, data: availableData});
 
-      // store 에 저장
+      // Snackbar 열기
+      this.setState({openSnackbar: true});
+
   }
 
   render(){
+    debugger;
+    console.log(this.props.isLogged);
+      if(!this.props.isLogged){
+        browserHistory.push('home');
+      }
       let that = this;
       let tableData =  makeTableDataForAdmin(this.props.videoList, this.props.availables)
       let today = new Date();
       let todayString = today.getFullYear()+"-" + (parseInt(today.getMonth())+1)+'-' + today.getDate();
       console.log(this.state.tableData);
+
+      let options = [];
+      this.props.studentList.map((studentInfo, index) => {
+          options.push(
+            {
+              value: studentInfo.nickname,
+              label: studentInfo.nickname,
+              index: index,
+            });
+      })
 
       if (!this.props.isLogged) return (<div></div>)
 
@@ -213,21 +238,29 @@ class Admin extends React.Component {
             flexDirection: 'column',
           }}
         >
-            <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                <SelectField
-                    style={{ }}
-                    floatingLabelText="Select Student"
-                    value={this.state.selectedStudent}
-                    onChange={this._onSelectFieldChange}
-                >
-                    <MenuItem value={null} primaryText="" />
-                    {
-                        this.props.studentList.map((studentInfo) => {
-                            return <MenuItem value={studentInfo.id} primaryText={studentInfo.nickname} />
-                        })
-                    }
-                </SelectField>
-                <RaisedButton label="Save Student" primary={true} onClick={this._onSaveClick}/>
+            <div style={{
+              marginTop: "20px",
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center'}}>
+
+            <Select
+              style={{width: '150px'}}
+              name="form-field-name"
+              value={this.state.selectedStudent}
+              options={options}
+              onChange={this._onSelectFieldChange}
+            />
+
+                <RaisedButton label="학생수업정보저장" primary={true} onClick={this._onSaveClick}>
+                  <Snackbar
+                    open={this.state.openSnackbar}
+                    message="학생이 이용가능한 수업 정보가 서버에 저장되었습니다."
+                    autoHideDuration={4000}
+                    onRequestClose={()=>{this.setState({openSnackbar: false})}}
+                  />
+                </RaisedButton>
             </div>
 
               <Table
@@ -239,7 +272,7 @@ class Admin extends React.Component {
                       adjustForCheckbox={this.state.showCheckboxes}
                   >
                       <TableRow>
-                        <TableHeaderColumn colSpan="6" tooltip="Lecture List" style={{textAlign: 'center', fontSize: '20px'}}>
+                        <TableHeaderColumn colSpan="8" tooltip="Lecture List" style={{textAlign: 'center', fontSize: '20px'}}>
                             {"Lecture List " + todayString}
                         </TableHeaderColumn>
                       </TableRow>
@@ -247,8 +280,8 @@ class Admin extends React.Component {
                         <TableHeaderColumn tooltip="The ID">ID</TableHeaderColumn>
                         <TableHeaderColumn tooltip="The Subject">Subject</TableHeaderColumn>
                         <TableHeaderColumn tooltip="The Week">Week</TableHeaderColumn>
-                        <TableHeaderColumn tooltip="The Title">Title</TableHeaderColumn>
-                        <TableHeaderColumn tooltip="The Expired Date">Expired Date</TableHeaderColumn>
+                        <TableHeaderColumn colSpan="2" tooltip="The Title">Title</TableHeaderColumn>
+                        <TableHeaderColumn colSpan="2" tooltip="The Expired Date">Expired Date</TableHeaderColumn>
                         <TableHeaderColumn tooltip="The Video">Video</TableHeaderColumn>
                       </TableRow>
                   </TableHeader>
@@ -264,9 +297,9 @@ class Admin extends React.Component {
                             <TableRowColumn>{index}</TableRowColumn>
                             <TableRowColumn>{row.subject}</TableRowColumn>
                             <TableRowColumn>{row.week}</TableRowColumn>
-                            <TableRowColumn>{row.title}</TableRowColumn>
+                            <TableRowColumn colSpan="2">{row.title}</TableRowColumn>
 
-                            <TableRowColumn>
+                            <TableRowColumn colSpan="2">
                                 <DatePicker
                                     hintText="Not Allowed"
                                     value={row.expiredDate ? new Date(row.expiredDate.split('-')[0], parseInt(row.expiredDate.split('-')[1])-1, row.expiredDate.split('-')[2]) : null }
@@ -276,12 +309,11 @@ class Admin extends React.Component {
                             </TableRowColumn>
 
                             <TableRowColumn>
-                                <FontIcon id={index} className="material-icons"
-                                style={row.expiredDate ? {cursor:'pointer'} : {cursor:'not-allowed', pointerEvents: 'none',opacity: 0.5} }
-                                color={blue500}
+                               <span id ={index}
+                                className="glyphicon glyphicon-play-circle"
+                                style={{cursor:'pointer'}}
                                 onClick={this._onVideoClick}
-                                > videogame_asset
-                                </FontIcon>
+                              ></span>
                             </TableRowColumn>
                         </TableRow>
                     )
@@ -307,4 +339,18 @@ class Admin extends React.Component {
   }
 }
 
+/*
+<SelectField
+    floatingLabelText="Select Student"
+    value={this.state.selectedStudent}
+    onChange={this._onSelectFieldChange}
+>
+    <MenuItem value={null} primaryText="" />
+    {
+        this.props.studentList.map((studentInfo) => {
+            return <MenuItem value={studentInfo.id} primaryText={studentInfo.nickname} />
+        })
+    }
+</SelectField>
+*/
 export default connect(mapStateToProps, mapDispatchToProps)(Admin);

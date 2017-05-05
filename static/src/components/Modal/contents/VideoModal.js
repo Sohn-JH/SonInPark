@@ -48,6 +48,10 @@ class VideoModal extends React.Component {
     };
   }
 
+  componentDidMount(){
+    document.getElementById('video-container').parentNode.style.overflowY="scroll";
+  }
+
   render(){
     const actions = [
       <FlatButton
@@ -65,17 +69,14 @@ class VideoModal extends React.Component {
         contentStyle={customContentStyle}
         open={this.props.showModal}
       >
-        <div className = "embed-responsive embed-responsive-16by9"
-          style={{overflow: 'scroll'}}>
+        <div id="video-container" className = "embed-responsive embed-responsive-16by9">
             <video className = "video-on-window embed-responsive-item"
-
                 preload = "auto"
                 controls
             >
             <source src = {this.props.videoUrl ? this.props.videoUrl : "http://52.42.203.75/videos/math/math1_1.mp4"} alt = "" type = "video/mp4" />
             Your browser does not support HTML5 video. </video>
         </div>
-
       </Dialog>
     )
   }

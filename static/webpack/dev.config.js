@@ -5,8 +5,8 @@ module.exports = {
   devtool: 'cheap-module-eval-source-map',
   entry: './src/index',
   output: {
-    path:path.join(__dirname,'../', './dist/'),
-    filename: 'bundle.js'
+    path: path.join(__dirname, '../', './dist/'),
+    filename: './dist/bundle.js'
   },
   devServer: {
     inline: true,
