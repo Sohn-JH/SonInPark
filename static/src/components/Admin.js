@@ -206,11 +206,7 @@ class Admin extends React.Component {
   }
 
   render(){
-    debugger;
-    console.log(this.props.isLogged);
-      if(!this.props.isLogged){
-        browserHistory.push('home');
-      }
+ 
       let that = this;
       let tableData =  makeTableDataForAdmin(this.props.videoList, this.props.availables)
       let today = new Date();
@@ -252,6 +248,9 @@ class Admin extends React.Component {
               options={options}
               onChange={this._onSelectFieldChange}
             />
+
+            <RaisedButton label="학생 수업 확인" primary={true} onClick={()=>{
+            browserHistory.push('student');}} />
 
                 <RaisedButton label="학생수업정보저장" primary={true} onClick={this._onSaveClick}>
                   <Snackbar
@@ -301,7 +300,8 @@ class Admin extends React.Component {
 
                             <TableRowColumn colSpan="2">
                                 <DatePicker
-                                    hintText="Not Allowed"
+                                    autoOk={true}
+				    hintText="Not Allowed"
                                     value={row.expiredDate ? new Date(row.expiredDate.split('-')[0], parseInt(row.expiredDate.split('-')[1])-1, row.expiredDate.split('-')[2]) : null }
                                     onChange={this._handleChangeDate}
                                     onClick={(e)=>{that.setState({ selectedLectureIndex: e.currentTarget.parentNode.parentNode.parentNode.parentNode.id },()=>{console.log(that.state.selectedLectureIndex);})}}
