@@ -11,7 +11,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import { logOn, updateUser, updateStudentList, updateStudent, updateVideoList } from '../actions';
 
 // constants
-import { ADMIN_IDS } from '../constants';
+import {ADMIN_IDS} from '../constants';
 
 // sub-components
 

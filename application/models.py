@@ -18,7 +18,7 @@ class Users(Document) :
 
     @staticmethod
     def update_available_lectures(uid, lecture_list) :
-        Users.objects(user_id=uid).update(add_to_set__avail_lectures=lecture_list)
+        Users.objects(user_id=uid).update(avail_lectures=lecture_list)
 
     @staticmethod
     def get_all_users() :

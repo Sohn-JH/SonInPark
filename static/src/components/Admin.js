@@ -206,7 +206,6 @@ class Admin extends React.Component {
   }
 
   render(){
-
       let that = this;
       let tableData =  makeTableDataForAdmin(this.props.videoList, this.props.availables)
       let today = new Date();
@@ -241,25 +240,24 @@ class Admin extends React.Component {
               justifyContent: 'space-between',
               alignItems: 'center'}}>
 
-            <Select
-              style={{width: '150px'}}
-              name="form-field-name"
-              value={this.state.selectedStudent}
-              options={options}
-              onChange={this._onSelectFieldChange}
-            />
-
-            <RaisedButton label="학생수업정보저장" primary={true} onClick={this._onSaveClick}>
-              <Snackbar
-                open={this.state.openSnackbar}
-                message="학생이 이용가능한 수업 정보가 서버에 저장되었습니다."
-                autoHideDuration={4000}
-                onRequestClose={()=>{this.setState({openSnackbar: false})}}
+              <Select
+                style={{width: '150px'}}
+                name="form-field-name"
+                value={this.state.selectedStudent}
+                options={options}
+                onChange={this._onSelectFieldChange}
               />
-            </RaisedButton>
-            <RaisedButton label="학생 수업 확인" primary={true} onClick={()=>{
-            browserHistory.push('student');}} />
 
+              <RaisedButton label="학생수업정보저장" primary={true} onClick={this._onSaveClick}>
+                <Snackbar
+                  open={this.state.openSnackbar}
+                  message="학생이 이용가능한 수업 정보가 서버에 저장되었습니다."
+                  autoHideDuration={4000}
+                  onRequestClose={()=>{this.setState({openSnackbar: false})}}
+                />
+              </RaisedButton>
+              <RaisedButton label="학생 수업 확인" primary={true} onClick={()=>{
+              browserHistory.push('student');}} />
             </div>
 
               <Table
@@ -300,7 +298,8 @@ class Admin extends React.Component {
 
                             <TableRowColumn colSpan="2">
                                 <DatePicker
-                                    hintText="Not Allowed"
+                                    autoOk={true}
+				    hintText="Not Allowed"
                                     value={row.expiredDate ? new Date(row.expiredDate.split('-')[0], parseInt(row.expiredDate.split('-')[1])-1, row.expiredDate.split('-')[2]) : null }
                                     onChange={this._handleChangeDate}
                                     onClick={(e)=>{that.setState({ selectedLectureIndex: e.currentTarget.parentNode.parentNode.parentNode.parentNode.id },()=>{console.log(that.state.selectedLectureIndex);})}}
