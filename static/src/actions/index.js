@@ -59,3 +59,10 @@ export const closeModal= () => {
     type: "CLOSE_MODAL",
   })
 }
+
+export const useLocalData = (contactData) => {
+  return {
+    type: "USE_LOCAL_DATA",
+    contactData,
+  }
+}

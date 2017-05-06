@@ -27,11 +27,13 @@ import {SERVER_URL} from '../constants';
 // sub-components
 
 // action
-import {openModalWithContent} from '../actions';
+import {openModalWithContent, useLocalData} from '../actions';
 
 // redux
 function mapStateToProps(state) {
     return {
+        store: state,
+        id: state.dataReducer.id,
         videoList: state.dataReducer.videoList,
         availables: state.dataReducer.availables,
         isLogged: state.dataReducer.isLogged,
@@ -40,7 +42,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return ({
-      _openModalWith: (content) => { dispatch(openModalWithContent(content))}
+      _openModalWith: (content) => { dispatch(openModalWithContent(content))},
+      _useLocalData: (contactData) => {dispatch(useLocalData(contactData))},
     });
 }
 
@@ -117,6 +120,18 @@ const isAvailable = (expiredDate ,today) => {
 class Student extends React.Component {
   constructor(props) {
         super(props);
+
+        let tableData;
+        console.log(localStorage);
+        const contactData = localStorage.contactData;
+        if (!this.props.id) { //새로고침인 경우
+          this.props._useLocalData(JSON.parse(contactData));
+          tableData = makeTableDataForStudent(JSON.parse(contactData).videoList, JSON.parse(contactData).availables);
+        } else { // 원래 경로로 들어온 경우
+          localStorage.contactData =  JSON.stringify(this.props.store.dataReducer);
+          tableData = makeTableDataForStudent(this.props.videoList, this.props.availables);
+        }
+
         this.state = {
             fixedHeader: true,
             fixedFooter: true,
@@ -128,7 +143,7 @@ class Student extends React.Component {
             deselectOnClickaway: true,
             showCheckboxes: false,
             height: '400px',
-            tableData: makeTableDataForStudent(this.props.videoList, this.props.availables),
+            tableData: tableData,
         };
 
         this._onVideoClick = this._onVideoClick.bind(this);
@@ -142,6 +157,11 @@ class Student extends React.Component {
         this._handleChange = (event) => {
             this.setState({height: event.target.value});
         };
+  }
+
+  componentDidUpdate() {
+    console.log(localStorage.contactData);
+    localStorage.contactData = JSON.stringify(this.props.store.dataReducer);
   }
 
   _onVideoClick(e){

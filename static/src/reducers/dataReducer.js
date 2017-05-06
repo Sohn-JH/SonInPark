@@ -124,6 +124,8 @@ const dataReducer = (state = initialState, action) => {
         showModal: false,
       })
 
+    case "USE_LOCAL_DATA": // (contactData)
+      return Object.assign({}, state, action.contactData)
 
   // Default
     default:

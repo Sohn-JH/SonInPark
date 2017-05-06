@@ -37,11 +37,13 @@ import {SERVER_URL} from '../constants';
 // sub-components
 
 // action
-import {openModalWithContent, updateStudent} from '../actions';
+import {openModalWithContent, updateStudent, useLocalData} from '../actions';
 
 // redux
 function mapStateToProps(state) {
     return {
+        store: state,
+        id: state.dataReducer.id,
         videoList: state.dataReducer.videoList,
         availables: state.dataReducer.availables,
         isLogged: state.dataReducer.isLogged,
@@ -54,6 +56,7 @@ function mapDispatchToProps(dispatch) {
     return ({
       _openModalWith: (content) => { dispatch(openModalWithContent(content))},
       _updateStudent: (studentId, nickname, available) => {dispatch(updateStudent(studentId, nickname, available))},
+      _useLocalData: (contactData) => {dispatch(useLocalData(contactData))},
     });
 }
 
@@ -115,6 +118,18 @@ const makeTableDataForAdmin = (videoList, availables) => {
 class Admin extends React.Component {
   constructor(props) {
         super(props);
+
+        let tableData;
+        console.log(localStorage);
+        const contactData = localStorage.contactData;
+        if (!this.props.id) { //새로고침인 경우
+          this.props._useLocalData(JSON.parse(contactData));
+          tableData = makeTableDataForAdmin(JSON.parse(contactData).videoList, JSON.parse(contactData).availables);
+        } else { // 원래 경로로 들어온 경우
+          localStorage.contactData =  JSON.stringify(this.props.store.dataReducer);
+          tableData = makeTableDataForAdmin(this.props.videoList, this.props.availables);
+        }
+
         this.state = {
             fixedHeader: true,
             fixedFooter: true,
@@ -126,7 +141,7 @@ class Admin extends React.Component {
             deselectOnClickaway: true,
             showCheckboxes: false,
             height: '400px',
-            tableData: makeTableDataForAdmin(this.props.videoList, this.props.availables),
+            tableData: tableData,
             selectedStudent: "",
             openSnackbar:false,
         };
@@ -146,6 +161,12 @@ class Admin extends React.Component {
             this.setState({height: event.target.value});
         };
   }
+
+  componentDidUpdate() {
+    console.log(localStorage.contactData);
+    localStorage.contactData = JSON.stringify(this.props.store.dataReducer);
+  }
+
 
   _onVideoClick(e){
     let videoUrl = SERVER_URL + "/dist/"+ this.state.tableData[e.target.id].url;
@@ -207,7 +228,7 @@ class Admin extends React.Component {
 
   render(){
       let that = this;
-      let tableData =  makeTableDataForAdmin(this.props.videoList, this.props.availables)
+      let tableData =  this.state.tableData;
       let today = new Date();
       let todayString = today.getFullYear()+"-" + (parseInt(today.getMonth())+1)+'-' + today.getDate();
       console.log(this.state.tableData);
