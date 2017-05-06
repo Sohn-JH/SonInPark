@@ -198,7 +198,7 @@ class Admin extends React.Component {
       console.log(availableData);
 
       // 변환된 데이터 API로 요청
-      httpManager.postStudentData({studentId:this.props.studentId, data: availableData});
+      httpManager.postStudentData({studentId:this.props.studentId, data: availableData},(res)=>{console.log('saved',res);});
 
       // Snackbar 열기
       this.setState({openSnackbar: true});
@@ -206,11 +206,7 @@ class Admin extends React.Component {
   }
 
   render(){
-    debugger;
-    console.log(this.props.isLogged);
-      if(!this.props.isLogged){
-        browserHistory.push('home');
-      }
+
       let that = this;
       let tableData =  makeTableDataForAdmin(this.props.videoList, this.props.availables)
       let today = new Date();
@@ -253,14 +249,17 @@ class Admin extends React.Component {
               onChange={this._onSelectFieldChange}
             />
 
-                <RaisedButton label="학생수업정보저장" primary={true} onClick={this._onSaveClick}>
-                  <Snackbar
-                    open={this.state.openSnackbar}
-                    message="학생이 이용가능한 수업 정보가 서버에 저장되었습니다."
-                    autoHideDuration={4000}
-                    onRequestClose={()=>{this.setState({openSnackbar: false})}}
-                  />
-                </RaisedButton>
+            <RaisedButton label="학생수업정보저장" primary={true} onClick={this._onSaveClick}>
+              <Snackbar
+                open={this.state.openSnackbar}
+                message="학생이 이용가능한 수업 정보가 서버에 저장되었습니다."
+                autoHideDuration={4000}
+                onRequestClose={()=>{this.setState({openSnackbar: false})}}
+              />
+            </RaisedButton>
+            <RaisedButton label="학생 수업 확인" primary={true} onClick={()=>{
+            browserHistory.push('student');}} />
+
             </div>
 
               <Table

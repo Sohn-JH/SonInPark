@@ -6,7 +6,7 @@ module.exports = {
   entry: './src/index',
   output: {
     path: path.join(__dirname, '../', './dist/'),
-    filename: './dist/bundle.js'
+    filename: './bundle.js'
   },
   devServer: {
     inline: true,

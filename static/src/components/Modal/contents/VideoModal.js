@@ -39,17 +39,16 @@ class VideoModal extends React.Component {
     super(props);
     this._handleClose = this._handleClose.bind(this);
     this.state = {
-
     // video
     selectableVideoOptions:[],
     videoName:null,
     videoInfo:null,
-
     };
   }
 
   componentDidMount(){
     document.getElementById('video-container').parentNode.style.overflowY="scroll";
+    $('#video-on-window').bind('contextmenu',function() { return false; });
   }
 
   render(){
@@ -70,7 +69,7 @@ class VideoModal extends React.Component {
         open={this.props.showModal}
       >
         <div id="video-container" className = "embed-responsive embed-responsive-16by9">
-            <video className = "video-on-window embed-responsive-item"
+            <video id="video-on-window" className = "video-on-window embed-responsive-item"
                 preload = "auto"
                 controls
             >

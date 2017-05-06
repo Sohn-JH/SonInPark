@@ -154,9 +154,6 @@ class Student extends React.Component {
   render(){
     let today = new Date();
     let todayString = today.getFullYear()+"-" + (parseInt(today.getMonth())+1)+'-' + today.getDate();
-    console.log(this.state.tableData);
-
-      if (!this.props.isLogged) return (<div></div>)
 
     return(
       <div className="app-body"

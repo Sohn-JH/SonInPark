@@ -8,7 +8,6 @@ import './global.css';
 import store from './store';
 import routes from './routes';
 
-
 injectTapEventPlugin();
 
 const history = syncHistoryWithStore(browserHistory, store);
