@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
+import { httpManager } from '../managers';
 
 import ModalContainer from './Modal/ModalContainer';
 import VideoModal from './Modal/contents/VideoModal';
@@ -27,7 +28,7 @@ import {SERVER_URL} from '../constants';
 // sub-components
 
 // action
-import {openModalWithContent, useLocalData} from '../actions';
+import {openModalWithContent, useLocalData, updateStudent} from '../actions';
 
 // redux
 function mapStateToProps(state) {
@@ -37,6 +38,8 @@ function mapStateToProps(state) {
         videoList: state.dataReducer.videoList,
         availables: state.dataReducer.availables,
         isLogged: state.dataReducer.isLogged,
+        nickname: state.dataReducer.nickname,
+        studentId: state.dataReducer.studentId,
     };
 }
 
@@ -44,6 +47,7 @@ function mapDispatchToProps(dispatch) {
     return ({
       _openModalWith: (content) => { dispatch(openModalWithContent(content))},
       _useLocalData: (contactData) => {dispatch(useLocalData(contactData))},
+      _updateStudent: (studentId, nickname, avilables) => { dispatch(updateStudent(studentId, nickname, avilables)); },
     });
 }
 
@@ -120,6 +124,8 @@ const isAvailable = (expiredDate ,today) => {
 class Student extends React.Component {
   constructor(props) {
         super(props);
+        debugger;
+
 
         let tableData;
         console.log(localStorage);
@@ -160,7 +166,14 @@ class Student extends React.Component {
   }
 
   componentDidUpdate() {
-    console.log(localStorage.contactData);
+    let that = this;
+    httpManager.getStudentData({studentId: that.props.studentId}, (res) => {
+        // 해당 학생 정보(studentId, available)업데이트
+        that.props._updateStudent(res.data.user_id, res.data.nickname, res.data.avail_lectures);
+        let tableData = makeTableDataForStudent(that.props.videoList, res.data.avail_lectures);
+        that.setState({tableData});
+    })
+
     localStorage.contactData = JSON.stringify(this.props.store.dataReducer);
   }
 
@@ -194,7 +207,7 @@ class Student extends React.Component {
             >
             <TableRow>
               <TableHeaderColumn colSpan="8" tooltip="Lecture List" style={{textAlign: 'center', fontSize: '20px'}}>
-                  {"Lecture List " + todayString}
+                  {this.props.nickname + "님의 Lecture List " + todayString}
               </TableHeaderColumn>
             </TableRow>
             <TableRow>

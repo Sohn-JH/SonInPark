@@ -144,6 +144,7 @@ class Admin extends React.Component {
             tableData: tableData,
             selectedStudent: "",
             openSnackbar:false,
+            message:""
         };
 
         this._onVideoClick = this._onVideoClick.bind(this);
@@ -208,6 +209,7 @@ class Admin extends React.Component {
   }
   _onSaveClick(e){
       // table Data payload로 변환
+      let that =this;
       let tableData = this.state.tableData;
       let availableData = { available:[] };
 
@@ -219,11 +221,10 @@ class Admin extends React.Component {
       console.log(availableData);
 
       // 변환된 데이터 API로 요청
-      httpManager.postStudentData({studentId:this.props.studentId, data: availableData},(res)=>{console.log('saved',res);});
+      httpManager.postStudentData({studentId:this.props.studentId, data: availableData},(res)=>{ that.setState({openSnackbar: true, message: "학생이 이용가능한 수업 정보가 서버에 저장되었습니다."})});
 
       // Snackbar 열기
-      this.setState({openSnackbar: true});
-
+      this.setState({openSnackbar: true, message: "학생이 이용가능한 수업 정보가 서버에 저장중입니다."});
   }
 
   render(){
@@ -270,12 +271,14 @@ class Admin extends React.Component {
               />
 
               <RaisedButton label="학생수업정보저장" primary={true} onClick={this._onSaveClick}>
+
                 <Snackbar
                   open={this.state.openSnackbar}
-                  message="학생이 이용가능한 수업 정보가 서버에 저장되었습니다."
+                  message={this.state.message}
                   autoHideDuration={4000}
                   onRequestClose={()=>{this.setState({openSnackbar: false})}}
                 />
+
               </RaisedButton>
               <RaisedButton label="학생 수업 확인" primary={true} onClick={()=>{
               browserHistory.push('student');}} />
@@ -321,7 +324,7 @@ class Admin extends React.Component {
                                 <DatePicker
                                     autoOk={true}
 				    hintText="Not Allowed"
-                                    value={row.expiredDate ? new Date(row.expiredDate.split('-')[0], parseInt(row.expiredDate.split('-')[1])-1, row.expiredDate.split('-')[2]) : null }
+                                    value={row.expiredDate && this.state.selectedStudent ? new Date(row.expiredDate.split('-')[0], parseInt(row.expiredDate.split('-')[1])-1, row.expiredDate.split('-')[2]) : null }
                                     onChange={this._handleChangeDate}
                                     onClick={(e)=>{that.setState({ selectedLectureIndex: e.currentTarget.parentNode.parentNode.parentNode.parentNode.id },()=>{console.log(that.state.selectedLectureIndex);})}}
                                 />
