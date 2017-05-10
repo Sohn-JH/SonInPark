@@ -7,12 +7,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css">
+
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet">
   <script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
+
+  <link href="http://vjs.zencdn.net/5.19.2/video-js.css" rel="stylesheet">
+
+  <script src="http://vjs.zencdn.net/5-unsafe/video.js"></script>
+  <style type="text/css">
+  .vjs-default-skin .vjs-play-progress,
+  .vjs-default-skin .vjs-volume-level { background-color: #369ed7 }
+  .vjs-default-skin .vjs-control-bar { font-size: 66% }
+</style>
+
 </head>
 
-<body>
+<body oncontextmenu='return false'>
   <div id="root"></div>
 
 
@@ -25,7 +36,7 @@
   </script>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-  <script src="./dist/bundle.js"></script>
+  <script src="./bundle.js"></script>
 
   <link rel="stylesheet" href="https://unpkg.com/react-select/dist/react-select.css">
 </body>

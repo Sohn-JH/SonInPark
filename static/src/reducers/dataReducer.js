@@ -121,6 +121,7 @@ const dataReducer = (state = initialState, action) => {
 
     case "CLOSE_MODAL": // (modalContent)
       return Object.assign({}, state, {
+        modalContent: "",
         showModal: false,
       })
 

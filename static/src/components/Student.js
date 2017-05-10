@@ -164,8 +164,7 @@ class Student extends React.Component {
             this.setState({height: event.target.value});
         };
   }
-
-  componentDidUpdate() {
+  componentDidMount(){
     let that = this;
     httpManager.getStudentData({studentId: that.props.studentId}, (res) => {
         // 해당 학생 정보(studentId, available)업데이트
@@ -173,7 +172,9 @@ class Student extends React.Component {
         let tableData = makeTableDataForStudent(that.props.videoList, res.data.avail_lectures);
         that.setState({tableData});
     })
+  }
 
+  componentDidUpdate() {
     localStorage.contactData = JSON.stringify(this.props.store.dataReducer);
   }
 

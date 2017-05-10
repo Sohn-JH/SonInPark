@@ -5,6 +5,7 @@ import axios from 'axios';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
+import $ from 'jquery';
 
 // action
 import { closeModal } from '../../../actions'
@@ -46,12 +47,41 @@ class VideoModal extends React.Component {
     };
   }
 
-  componentDidMount(){
+  componentDidUpdate(){
+    let that = this;
+    var video, wrapper;
+    wrapper = document.createElement('div');
+    wrapper.innerHTML = "<video id='video-onwindow' class='video-js vjs-default-skin video-on-window embed-responsive-item' controls preload='auto' data-setup={} > <source src=" +
+      (this.props.videoUrl ? this.props.videoUrl : "http://14.63.217.83/dist/videos/math/math1_1.mp4")
+    + " type='video/mp4'> <p className='vjs-no-js'>To view this video please enable JavaScript, and consider upgrading to a web browser that <a href='http://videojs.com/html5-video-support/' target='_blank'>supports HTML5 video</a></p> </video>";
+
+    video = wrapper.firstChild;
+    console.log(this.target);
+    this.target.appendChild(video);
+    videojs(video, {});
+
     document.getElementById('video-container').parentNode.style.overflowY="scroll";
-    $('#video-on-window').bind('contextmenu',function() { return false; });
+  }
+
+  componentDidMount(){
+    let that = this;
+    var video, wrapper;
+    wrapper = document.createElement('div');
+    wrapper.innerHTML = "<video id='video-onwindow' class='video-js vjs-default-skin video-on-window embed-responsive-item' controls preload='auto' data-setup={} > <source src=" +
+      (this.props.videoUrl ? this.props.videoUrl : "http://14.63.217.83/dist/videos/math/math1_1.mp4")
+    + " type='video/mp4'> <p className='vjs-no-js'>To view this video please enable JavaScript, and consider upgrading to a web browser that <a href='http://videojs.com/html5-video-support/' target='_blank'>supports HTML5 video</a></p> </video>";
+
+    video = wrapper.firstChild;
+    console.log(this.target);
+    this.target.appendChild(video);
+    videojs(video, {});
+    
+    document.getElementById('video-container').parentNode.style.overflowY="scroll";
   }
 
   render(){
+
+
     const actions = [
       <FlatButton
         label="Cancel"
@@ -68,13 +98,8 @@ class VideoModal extends React.Component {
         contentStyle={customContentStyle}
         open={this.props.showModal}
       >
-        <div id="video-container" className = "embed-responsive embed-responsive-16by9">
-            <video id="video-on-window" className = "video-on-window embed-responsive-item"
-                preload = "auto"
-                controls
-            >
-            <source src = {this.props.videoUrl ? this.props.videoUrl : "http://52.42.203.75/videos/math/math1_1.mp4"} alt = "" type = "video/mp4" />
-            Your browser does not support HTML5 video. </video>
+
+        <div id="video-container" className = "embed-responsive embed-responsive-16by9" ref={ref => this.target = ref} >
         </div>
       </Dialog>
     )
@@ -82,3 +107,12 @@ class VideoModal extends React.Component {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(VideoModal);
+
+
+// <video id="video-on-window" className = "video-on-window embed-responsive-item"
+//     preload = "auto"
+//     controls
+//     controlList="fullscreen nodownload noremote foobar"
+// >
+// <source src = {this.props.videoUrl ? this.props.videoUrl : "http://14.63.217.83/dist/videos/math/math1_1.mp4"} alt = "" type = "video/mp4" />
+// Your browser does not support HTML5 video. </video>
