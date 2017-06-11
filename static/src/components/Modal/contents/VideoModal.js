@@ -2,14 +2,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 
-import videojs from 'video.js';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import $ from 'jquery';
 
 // action
-import { closeModal } from '../../../actions'
+import { closeModal } from '../../../actions';
 
 // redux
 function mapStateToProps(state){
@@ -18,11 +17,15 @@ function mapStateToProps(state){
   });
 }
 
+
 function mapDispatchToProps(dispatch){
   return({
-    _closeModal: ()=>{dispatch(closeModal())}
+    _dispatch: (action, params) => {dispatch(action(params))},
   });
 }
+
+// //실제 사용
+// this.props._dispatch(actions.actionName, {param: 'param1'})
 
 // style
 const customContentStyle = {
@@ -34,7 +37,7 @@ const customContentStyle = {
 class VideoModal extends React.Component {
 
   _handleClose(e){
-    this.props._closeModal();
+    this.props._dispatch(closeModal);
   }
 
   constructor(props){
@@ -76,7 +79,7 @@ class VideoModal extends React.Component {
     console.log(this.target);
     this.target.appendChild(video);
     videojs(video, {});
-    
+
     document.getElementById('video-container').parentNode.style.overflowY="scroll";
   }
 

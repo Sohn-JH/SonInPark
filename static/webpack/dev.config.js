@@ -3,15 +3,15 @@ const path = require('path');
 
 module.exports = {
   devtool: 'cheap-module-eval-source-map',
-  entry: './src/index',
+  entry: path.join(__dirname, '..', 'src'),
   output: {
-    path: path.join(__dirname, '../', './dist/'),
+    path: path.join(__dirname, '..', 'dist'),
     filename: 'bundle.js'
   },
   devServer: {
     inline: true,
     port: 7070,
-    contentBase: './',
+    contentBase: path.join(__dirname, '..'),
     historyApiFallback: true,
   },
   module: {
